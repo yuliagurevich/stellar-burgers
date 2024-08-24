@@ -18,7 +18,9 @@ import {
   AppHeader,
   IngredientDetails,
   Modal,
+  OrderCard,
   OrderInfo,
+  OrderStatus,
   ProtectedRoute
 } from '@components';
 import { useEffect } from 'react';
@@ -95,7 +97,19 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route
+          path='/ingredients/:id'
+          element={
+            <div className={`${styles.detailPageWrap}`}>
+              <h3
+                className={`${styles.detailHeader} text text_type_main-large`}
+              >
+                Детали ингредиента
+              </h3>
+              <IngredientDetails />
+            </div>
+          }
+        />
         <Route path='/feed/:number' element={<OrderInfo />} />
         <Route
           path='/profile/orders/:number'
@@ -120,7 +134,7 @@ const App = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal title='' onClose={handleModalClose}>
+              <Modal title='Детали ингредиента' onClose={handleModalClose}>
                 <IngredientDetails />
               </Modal>
             }

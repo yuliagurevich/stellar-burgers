@@ -3,8 +3,7 @@ import { useDispatch } from '@store';
 import { ProfileOrdersUI } from '@ui-pages';
 import { TOrder } from '@utils-types';
 import { FC, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useSelector } from '@store';
 
 export const ProfileOrders: FC = () => {
   const dispatch = useDispatch();

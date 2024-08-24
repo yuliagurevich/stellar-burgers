@@ -4,7 +4,10 @@ import {
   getFeedsApi,
   getOrderByNumberApi,
   getOrdersApi,
-  orderBurgerApi
+  orderBurgerApi,
+  TFeedsResponse,
+  TNewOrderResponse,
+  TOrderResponse
 } from '@api';
 import { RootState } from '@store';
 import { ORDERS_SLICE_NAME } from './constants';
@@ -27,22 +30,15 @@ const initialState: TOrdersState = {
   orderData: null
 };
 
-const placeOrder = createAsyncThunk('orders/create', async (order: string[]) =>
-  orderBurgerApi(order)
-);
+const placeOrder = createAsyncThunk('orders/create', orderBurgerApi);
 
-const getFeedOrders = createAsyncThunk('orders/getAll', async () => {
-  console.log('Request');
-  return getFeedsApi();
-});
+const getFeedOrders = createAsyncThunk('orders/getAll', getFeedsApi);
 
-const getUserOrders = createAsyncThunk('orders/get', async () =>
-  getOrdersApi()
-);
+const getUserOrders = createAsyncThunk('orders/get', getOrdersApi);
 
 const getOrderByNumber = createAsyncThunk(
-  'order/getByNumber',
-  async (number: number) => getOrderByNumberApi(number)
+  'orders/getByNumber',
+  getOrderByNumberApi
 );
 
 const ordersSlice = createSlice({
@@ -61,10 +57,13 @@ const ordersSlice = createSlice({
       .addCase(placeOrder.rejected, (state, action) => {
         state.isLoading = false;
       })
-      .addCase(placeOrder.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.orderData = action.payload.order;
-      })
+      .addCase(
+        placeOrder.fulfilled,
+        (state, action: PayloadAction<TNewOrderResponse>) => {
+          state.isLoading = false;
+          state.orderData = action.payload.order;
+        }
+      )
       .addCase(getFeedOrders.pending, (state) => {
         state.isLoading = true;
       })
@@ -73,14 +72,7 @@ const ordersSlice = createSlice({
       })
       .addCase(
         getFeedOrders.fulfilled,
-        (
-          state,
-          action: PayloadAction<{
-            orders: TOrder[];
-            total: number;
-            totalToday: number;
-          }>
-        ) => {
+        (state, action: PayloadAction<TFeedsResponse>) => {
           state.isLoading = false;
           state.orders = action.payload.orders;
           state.total = action.payload.total;
@@ -89,15 +81,20 @@ const ordersSlice = createSlice({
       )
       .addCase(getUserOrders.pending, (state) => {})
       .addCase(getUserOrders.rejected, (state, action) => {})
-      .addCase(getUserOrders.fulfilled, (state, action) => {
-        console.log(action.payload);
-        state.orders = action.payload;
-      })
+      .addCase(
+        getUserOrders.fulfilled,
+        (state, action: PayloadAction<TOrder[]>) => {
+          state.orders = action.payload;
+        }
+      )
       .addCase(getOrderByNumber.pending, (state) => {})
       .addCase(getOrderByNumber.rejected, (state, action) => {})
-      .addCase(getOrderByNumber.fulfilled, (state, action) => {
-        state.orderData = action.payload.orders[0];
-      });
+      .addCase(
+        getOrderByNumber.fulfilled,
+        (state, action: PayloadAction<TOrderResponse>) => {
+          state.orderData = action.payload.orders[0];
+        }
+      );
   },
   selectors: {
     getOrders: (state: TOrdersState) => state.orders,
