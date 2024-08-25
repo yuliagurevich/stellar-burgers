@@ -1,24 +1,51 @@
 import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
+import { useDispatch, useSelector } from '@store';
+import {
+  burgerSelectors,
+  ordersSelectors,
+  userSelectors,
+  ordersThunks,
+  burgerActions,
+  orderActions
+} from '@slices';
+import { useNavigate } from 'react-router-dom';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
-  };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const orderRequest = false;
-
-  const orderModalData = null;
+  const constructorItems = useSelector(burgerSelectors.getConstructorItems);
+  const user = useSelector(userSelectors.getUser);
+  const isOrderRequestPending = useSelector(ordersSelectors.getIsLoading);
+  const orderModalData = useSelector(ordersSelectors.getOrderData);
 
   const onOrderClick = () => {
-    if (!constructorItems.bun || orderRequest) return;
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    if (isOrderRequestPending) return;
+
+    if (constructorItems.bun && constructorItems.ingredients.length > 0) {
+      const order = [];
+      order.push(constructorItems.bun._id);
+      constructorItems.ingredients.forEach((ingredient) => {
+        order.push(ingredient._id);
+      });
+      order.push(constructorItems.bun._id);
+      dispatch(ordersThunks.placeOrder(order));
+    } else {
+      return;
+    }
   };
-  const closeOrderModal = () => {};
+
+  const closeOrderModal = () => {
+    dispatch(burgerActions.resetIngredients());
+    dispatch(orderActions.resetOrderData());
+  };
 
   const price = useMemo(
     () =>
@@ -30,12 +57,10 @@ export const BurgerConstructor: FC = () => {
     [constructorItems]
   );
 
-  return null;
-
   return (
     <BurgerConstructorUI
       price={price}
-      orderRequest={orderRequest}
+      orderRequest={isOrderRequestPending}
       constructorItems={constructorItems}
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}

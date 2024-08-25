@@ -1,24 +1,29 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from '@store';
+import { userSelectors, userThunks } from '@slices';
+import { useLocation } from 'react-router-dom';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
+  const user = useSelector(userSelectors.getUser);
+
+  const userNameText = user ? user.name : '';
+  const userEmailText = user ? user.email : '';
+
+  const location = useLocation();
+  console.log('Profile location', location);
 
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: userNameText,
+    email: userEmailText,
     password: ''
   });
 
   useEffect(() => {
     setFormValue((prevState) => ({
       ...prevState,
-      name: user?.name || '',
-      email: user?.email || ''
+      name: userNameText,
+      email: userEmailText
     }));
   }, [user]);
 
@@ -27,15 +32,20 @@ export const Profile: FC = () => {
     formValue.email !== user?.email ||
     !!formValue.password;
 
+  const dispatch = useDispatch();
+
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    dispatch(userThunks.updateUser(formValue));
+
+    // TODO Очистить поле пароля? Или оставить?
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
     setFormValue({
-      name: user.name,
-      email: user.email,
+      name: userNameText,
+      email: userEmailText,
       password: ''
     });
   };
@@ -56,6 +66,4 @@ export const Profile: FC = () => {
       handleInputChange={handleInputChange}
     />
   );
-
-  return null;
 };
