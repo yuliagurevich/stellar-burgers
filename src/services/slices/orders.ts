@@ -21,7 +21,7 @@ type TOrdersState = {
   orderData: TOrder | null;
 };
 
-const initialState: TOrdersState = {
+export const ordersInitialState: TOrdersState = {
   orders: [],
   total: 0,
   totalToday: 0,
@@ -43,7 +43,7 @@ const getOrderByNumber = createAsyncThunk(
 
 const ordersSlice = createSlice({
   name: ORDERS_SLICE_NAME,
-  initialState,
+  initialState: ordersInitialState,
   reducers: {
     resetOrderData: (state) => {
       state.orderData = null;

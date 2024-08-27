@@ -22,7 +22,7 @@ type TUserState = {
   isAuthChecked: boolean;
 };
 
-const initialState: TUserState = {
+export const userInitialState: TUserState = {
   user: null,
   isAuthPending: false,
   authError: null,
@@ -44,7 +44,7 @@ const logoutUser = createAsyncThunk('user/logout', logoutApi);
 
 const userSlice = createSlice({
   name: USER_SLICE_NAME,
-  initialState,
+  initialState: userInitialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
