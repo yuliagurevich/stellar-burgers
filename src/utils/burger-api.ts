@@ -99,6 +99,7 @@ export const getOrdersApi = () =>
     return Promise.reject(data);
   });
 
+// The actual API response object has changed and no longer complies with this response type.
 export type TNewOrderResponse = TServerResponse<{
   order: TOrder;
   name: string;

@@ -12,13 +12,13 @@ import {
 import { RootState } from '@store';
 import { ORDERS_SLICE_NAME } from './constants';
 
-type TOrdersState = {
+export type TOrdersState = {
   orders: TOrder[];
   total: number;
   totalToday: number;
   isLoading: boolean;
-
   orderData: TOrder | null;
+  errorMessage: string | null;
 };
 
 export const ordersInitialState: TOrdersState = {
@@ -26,8 +26,8 @@ export const ordersInitialState: TOrdersState = {
   total: 0,
   totalToday: 0,
   isLoading: false,
-
-  orderData: null
+  orderData: null,
+  errorMessage: null
 };
 
 const placeOrder = createAsyncThunk('orders/create', orderBurgerApi);
@@ -52,10 +52,14 @@ const ordersSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(placeOrder.pending, (state) => {
+        state.orderData = null;
         state.isLoading = true;
+        state.errorMessage = null;
       })
       .addCase(placeOrder.rejected, (state, action) => {
         state.isLoading = false;
+        state.errorMessage =
+          action.error.message || 'Не удалось разместить заказ';
       })
       .addCase(
         placeOrder.fulfilled,
@@ -65,10 +69,17 @@ const ordersSlice = createSlice({
         }
       )
       .addCase(getFeedOrders.pending, (state) => {
+        state.orders = [];
+        state.total = 0;
+        state.totalToday = 0;
         state.isLoading = true;
+        state.errorMessage = null;
       })
       .addCase(getFeedOrders.rejected, (state, action) => {
         state.isLoading = false;
+        state.errorMessage =
+          action.error.message ||
+          'Не удалось получить данные для ленты заказов';
       })
       .addCase(
         getFeedOrders.fulfilled,
@@ -79,19 +90,40 @@ const ordersSlice = createSlice({
           state.totalToday = action.payload.totalToday;
         }
       )
-      .addCase(getUserOrders.pending, (state) => {})
-      .addCase(getUserOrders.rejected, (state, action) => {})
+      .addCase(getUserOrders.pending, (state) => {
+        state.orders = [];
+        state.total = 0;
+        state.totalToday = 0;
+        state.isLoading = true;
+        state.errorMessage = null;
+      })
+      .addCase(getUserOrders.rejected, (state, action) => {
+        state.isLoading = false;
+        state.errorMessage =
+          action.error.message ||
+          'Не удалось получить данные о заказах пользователя';
+      })
       .addCase(
         getUserOrders.fulfilled,
         (state, action: PayloadAction<TOrder[]>) => {
+          state.isLoading = false;
           state.orders = action.payload;
         }
       )
-      .addCase(getOrderByNumber.pending, (state) => {})
-      .addCase(getOrderByNumber.rejected, (state, action) => {})
+      .addCase(getOrderByNumber.pending, (state) => {
+        state.orderData = null;
+        state.isLoading = true;
+        state.errorMessage = null;
+      })
+      .addCase(getOrderByNumber.rejected, (state, action) => {
+        state.isLoading = false;
+        state.errorMessage =
+          action.error.message || 'Не удалось получить данные по номеру заказа';
+      })
       .addCase(
         getOrderByNumber.fulfilled,
         (state, action: PayloadAction<TOrderResponse>) => {
+          state.isLoading = false;
           state.orderData = action.payload.orders[0];
         }
       );

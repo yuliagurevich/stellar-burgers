@@ -5,12 +5,26 @@ import {
   USER_SLICE_NAME,
   ORDERS_SLICE_NAME
 } from '../slices/constants';
-import { ingredientsInitialState } from '../slices/ingredients';
-import { burgerInitialState } from '../slices/burger';
-import { userInitialState } from '../slices/user';
-import { ordersInitialState } from '../slices/orders';
+import ingredientsReducer, {
+  ingredientsInitialState
+} from '../slices/ingredients';
+import burgerReducer, { burgerInitialState } from '../slices/burger';
+import userReducer, { userInitialState } from '../slices/user';
+import ordersReducer, { ordersInitialState } from '../slices/orders';
 
 describe('rootReducer', () => {
+  it('initializes the state correctly', () => {
+    const initAction = { type: '@@INIT' };
+    const state = rootReducer(undefined, initAction);
+
+    expect(state).toEqual({
+      [BURGER_SLICE_NAME]: burgerReducer(undefined, initAction),
+      [INGREDIENTS_SLICE_NAME]: ingredientsReducer(undefined, initAction),
+      [ORDERS_SLICE_NAME]: ordersReducer(undefined, initAction),
+      [USER_SLICE_NAME]: userReducer(undefined, initAction)
+    });
+  });
+
   it('should initialize with the correct reducers and initial state', () => {
     const state: RootState = store.getState();
 

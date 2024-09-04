@@ -10,7 +10,7 @@ export const Register: FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const errorText = useSelector(userSelectors.getAuthError);
+  const errorText = useSelector(userSelectors.getErrorMessage);
 
   const dispatch = useDispatch();
 
