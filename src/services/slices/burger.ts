@@ -10,7 +10,7 @@ type TCostructorState = {
   };
 };
 
-const initialState: TCostructorState = {
+export const burgerInitialState: TCostructorState = {
   constructorItems: {
     bun: null,
     ingredients: []
@@ -19,7 +19,7 @@ const initialState: TCostructorState = {
 
 const burgerSlice = createSlice({
   name: BURGER_SLICE_NAME,
-  initialState,
+  initialState: burgerInitialState,
   reducers: {
     addIngredient: {
       reducer: (state, action: PayloadAction<TConstructorIngredient>) => {
@@ -59,7 +59,7 @@ const burgerSlice = createSlice({
       );
     },
     resetIngredients: (state) => {
-      state.constructorItems = initialState.constructorItems;
+      state.constructorItems = burgerInitialState.constructorItems;
     }
   },
   selectors: {

@@ -11,7 +11,7 @@ export const Login: FC = () => {
 
   const dispatch = useDispatch();
 
-  const errorText = useSelector(userSelectors.getAuthError);
+  const errorText = useSelector(userSelectors.getErrorMessage);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();

@@ -4,13 +4,13 @@ import { TIngredient } from '@utils-types';
 import { RootState } from 'src/services/store';
 import { INGREDIENTS_SLICE_NAME } from './constants';
 
-type TIngredientsState = {
+export type TIngredientsState = {
   ingredients: TIngredient[];
   isLoading: boolean;
   error: string | null | undefined;
 };
 
-const initialState: TIngredientsState = {
+export const ingredientsInitialState: TIngredientsState = {
   ingredients: [],
   isLoading: false,
   error: null
@@ -23,7 +23,7 @@ const getIngredients = createAsyncThunk(
 
 const ingredientsSlice = createSlice({
   name: INGREDIENTS_SLICE_NAME,
-  initialState,
+  initialState: ingredientsInitialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
